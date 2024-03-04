@@ -31,3 +31,4 @@ def get_embedding(text, model="text-embedding-ada-002"):
 
 content ="안녕"
 get_embedding(content, model='text-embedding-ada-002')
+
