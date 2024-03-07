@@ -12,7 +12,6 @@ import datetime
 
 
 
-
 '''
 uuid 모듈은 Universally Unique IDentifier(범용 고유 식별자)를 생성하는데 사용됩니다.
 uuid4 함수는 랜덤한 UUID를 생성합니다. UUID는 전 세계적으로 고유한 값을 생성하는 데 사용되며, 
@@ -52,6 +51,7 @@ def gpt3_embedding(content, model='text-embedding-ada-002'):
     content = content.replace("\n", " ")
     vector = client.embeddings.create(input = [content], model=model).data[0].embedding
     return vector
+
 
 
 #gpt-3.5-turbo-instruct
@@ -110,6 +110,16 @@ for m in parsed_data["matches"]:
 
 print("best usado:", lowest_score_id)
 '''
+def save_list_file_for_finetuning(file_name, content):     #-> 파인튜닝할용도로 prompt와 output저장
+    try:
+        # 파일을 쓰기 모드로 엽니다.
+        with open(file_name, 'w') as file:
+            # content를 파일에 씁니다.
+            file.write(content)
+        print(f'파일 "{file_name}"에 성공적으로 저장되었습니다.')
+    except Exception as e:
+        print(f'파일 "{file_name}" 저장 중 오류가 발생했습니다: {e}')
+
 
 # 유사도로 가까운거 뽑은것들 텍스트로 쭉
 def load_conversation2(results):    #results = vdb.query(vector=vector, top_k=convo_length)
@@ -187,6 +197,10 @@ if __name__ == '__main__':
 
 
         print('\n\n나동반: %s' % output) # output 출력 ex)어제 자주색 코트가 이쁘다며 말씀하셨어요.  ->성공!!
+        
+        file_name = "listup_file_for_finetuning"   #->그냥 텍스트 파일
+        content = prompt+'\n'+output+'\n\n\n'  #-> ex) 20240226-13:56 : 오 이 자주색 코트 이쁘다 내일 인터넷으로 찾아봐야겠다.  20240227-16:17 : 어제 내가 이쁘다고한 코트 무슨색이었지? \n 어제 자주색 코트가 이쁘다며 말씀하셨어요. \n\n\n
+        save_list_file_for_finetuning(file_name, content)
 
         #vdb와 nexus에 들어갈것 a, gpt의답변은 들어가지안아도됨
         #유사도 에서는 하나만 뽑을것 ->고쳐야될것 :load_conversation()
@@ -197,26 +211,9 @@ if __name__ == '__main__':
 
 
         # output = gpt3_completion(prompt)  gpt 대답  
-        # prompt = open_file('prompt_response.txt').replace('<<CONVERSATION>>', conversation).replace('<<MESSAGE>>', a)  gpt에게 할말
+        # prompt = open_file('prompt_response.txt').replace('<<CONVERSATION>>', conversation).replace('<<MESSAGE>>', a)  gpt에게 할말   
 
 
 
-        # pompt와 output을 쌍으로 저장  -> 나중에 파인튜닝
-
-'''       
-def save_list_file_for_finetuning(file_name, content):     -> 파인튜닝할용도로 prompt와 output저장
-    try:
-        # 파일을 쓰기 모드로 엽니다.
-        with open(file_name, 'w') as file:
-            # content를 파일에 씁니다.
-            file.write(content)
-        print(f'파일 "{file_name}"에 성공적으로 저장되었습니다.')
-    except Exception as e:
-        print(f'파일 "{file_name}" 저장 중 오류가 발생했습니다: {e}')
-
-file_name = "listup_file_for_finetuning"   ->그냥 텍스트 파일
-content = prompt+'\n'+output+'\n\n\n'  -> ex) 20240226-13:56 : 오 이 자주색 코트 이쁘다 내일 인터넷으로 찾아봐야겠다.  20240227-16:17 : 어제 내가 이쁘다고한 코트 무슨색이었지? \n 어제 자주색 코트가 이쁘다며 말씀하셨어요. \n\n\n
-save_list_file_for_finetuning(file_name, content)
-'''
 
 
